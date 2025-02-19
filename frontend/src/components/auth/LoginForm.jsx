@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../../features/auth/authSlice';
+import './Auth.css';
 
 export default function LoginForm() {
   const dispatch = useDispatch();
@@ -12,6 +13,19 @@ export default function LoginForm() {
     username: '',
     password: '',
   });
+
+  useEffect(() => {
+    const checkFilesExist = async () => {
+      try {
+        await import('../../features/auth/authSlice');
+        await import('../../features/recipe/recipeSlice');
+      } catch (error) {
+        console.error('Required files are missing:', error);
+      }
+    };
+
+    checkFilesExist();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,21 +44,19 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h2 className="text-3xl font-bold text-center">Sign in</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1>Sign in</h1>
         </div>
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded">
+          <div className="error-message">
             {error}
           </div>
         )}
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-              Username
-            </label>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
             <input
               id="username"
               name="username"
@@ -52,14 +64,10 @@ export default function LoginForm() {
               required
               value={formData.username}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
             <input
               id="password"
               name="password"
@@ -67,30 +75,25 @@ export default function LoginForm() {
               required
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
-
           <div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+              className="auth-button"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>
-
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
+        <div className="auth-footer">
+          <p>
             Don't have an account?{' '}
-            <Link to="/register" className="text-blue-600 hover:text-blue-500">
-              Register here
-            </Link>
+            <Link to="/register">Register here</Link>
           </p>
         </div>
       </div>
     </div>
   );
-} 
+}

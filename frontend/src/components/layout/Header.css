@@ -1,0 +1,172 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  z-index: 1000;
+}
+
+.header-container {
+  width: 100%;
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #333;
+  padding-left: 16px;
+}
+
+.logo-icon {
+  color: #B27C52;
+  font-size: 20px;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  margin-left: auto;
+}
+
+.nav-link {
+  color: #4A4A4A;
+  text-decoration: none;
+  font-size: 15px;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: #B27C52;
+}
+
+/* Add underline effect for active/selected link */
+.nav-link.active {
+  color: #B27C52;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #B27C52;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-left: 32px;
+  padding-right: 16px;
+}
+
+.btn-text {
+  color: #4A4A4A;
+  text-decoration: none;
+  font-size: 15px;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.btn-text:hover {
+  color: #333;
+}
+
+.btn-primary {
+  background: #B27C52;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #96663F;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #4A4A4A;
+  cursor: pointer;
+  padding: 8px;
+}
+
+/* Tablet and smaller screens */
+@media (max-width: 1024px) {
+  .nav-links {
+    position: static;
+    transform: none;
+    margin-left: 32px;
+  }
+}
+
+/* Mobile screens */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
+  .auth-buttons {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .header.menu-open .nav-links,
+  .header.menu-open .auth-buttons {
+    display: flex;
+    position: absolute;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .header.menu-open .nav-links {
+    align-items: flex-start;
+  }
+
+  .header.menu-open .auth-buttons {
+    top: 200px;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+  .header-container {
+    padding: 0 16px;
+  }
+
+  .logo-text {
+    font-size: 16px;
+  }
+} 

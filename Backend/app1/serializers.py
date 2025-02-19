@@ -1,18 +1,23 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .models import Recipe, SavedRecipe
 from django.contrib.auth.password_validation import validate_password
 
+User = get_user_model()
+
 class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer for User model.
-    
-    Provides a secure way to serialize user data by only including
-    non-sensitive fields.
-    """
     class Meta:
         model = User
-        fields = ('id', 'username', 'email')
+        fields = ['email', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User(
+            email=validated_data['email'],
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
 class RecipeSerializer(serializers.ModelSerializer):
     """
@@ -52,7 +57,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'password2', 'email')
+        fields = ('username', 'email', 'password', 'password2')
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -60,10 +65,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        user = User.objects.create(
+        user = User(
             username=validated_data['username'],
             email=validated_data['email']
         )
         user.set_password(validated_data['password'])
         user.save()
-        return user 
+        return user

@@ -1,59 +1,50 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../features/auth/authSlice';
+import './Header.css';  // Import the header-specific styles
 
 export default function Header() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   return (
-    <header className="bg-white shadow">
-      <nav className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <Link to="/" className="text-xl font-bold text-gray-800">
-            Recipe Generator
-          </Link>
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <>
-                <Link 
-                  to="/recipes" 
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  My Recipes
-                </Link>
-                <Link 
-                  to="/generate" 
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  Generate Recipe
-                </Link>
-                <button
-                  onClick={() => dispatch(logout())}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link 
-                  to="/login"
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
+    <header className="header">
+      <div className="header-container">
+        <Link to="/" className="logo">
+          <i className="fas fa-utensils logo-icon"></i>
+          <span className="logo-text">RecipeAI</span>
+        </Link>
+
+        <nav className="nav-links">
+          <NavLink to="/features" className="nav-link">Features</NavLink>
+          <NavLink to="/recipes" className="nav-link">Recipes</NavLink>
+          <NavLink to="/about" className="nav-link">About</NavLink>
+        </nav>
+
+        <div className="auth-buttons">
+          {user ? (
+            <button
+              onClick={() => dispatch(logout())}
+              className="btn-text"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <>
+              <Link to="/login" className="btn-text">
+                Sign In
+              </Link>
+              <Link to="/register" className="btn-primary">
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
-      </nav>
+
+        <button className="mobile-menu-btn">
+          <i className="fas fa-bars"></i>
+        </button>
+      </div>
     </header>
   );
 } 

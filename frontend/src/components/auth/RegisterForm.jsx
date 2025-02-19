@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../../features/auth/authSlice';
+import './Auth.css';
 
 export default function RegisterForm() {
   const dispatch = useDispatch();
@@ -37,21 +38,19 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h2 className="text-3xl font-bold text-center">Create Account</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1>Create Account</h1>
         </div>
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded">
+          <div className="error-message">
             {error}
           </div>
         )}
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-              Username
-            </label>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
             <input
               id="username"
               name="username"
@@ -59,14 +58,10 @@ export default function RegisterForm() {
               required
               value={formData.username}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
             <input
               id="email"
               name="email"
@@ -74,14 +69,10 @@ export default function RegisterForm() {
               required
               value={formData.email}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
             <input
               id="password"
               name="password"
@@ -89,14 +80,10 @@ export default function RegisterForm() {
               required
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
-
-          <div>
-            <label htmlFor="password2" className="block text-sm font-medium text-gray-700">
-              Confirm Password
-            </label>
+          <div className="form-group">
+            <label htmlFor="password2">Confirm Password</label>
             <input
               id="password2"
               name="password2"
@@ -104,30 +91,25 @@ export default function RegisterForm() {
               required
               value={formData.password2}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
-
           <div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+              className="auth-button"
             >
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
           </div>
         </form>
-
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
+        <div className="auth-footer">
+          <p>
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-600 hover:text-blue-500">
-              Sign in here
-            </Link>
+            <Link to="/login">Sign in here</Link>
           </p>
         </div>
       </div>
     </div>
   );
-} 
+}

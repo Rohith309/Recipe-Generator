@@ -7,7 +7,17 @@ from django.shortcuts import get_object_or_404
 import cohere
 from django.conf import settings
 from .models import Recipe, SavedRecipe, User
-from .serializers import RecipeSerializer, SavedRecipeSerializer, RegisterSerializer
+from .serializers import RecipeSerializer, SavedRecipeSerializer, RegisterSerializer, UserSerializer
+import logging
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .forms import UserRegistrationForm
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token  # Add this import
+
+logger = logging.getLogger('myapp')  # Use the logger defined in settings.py
 
 # Create your views here.
 
@@ -18,16 +28,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     Provides CRUD operations for recipes with proper authentication
     and user-specific queryset filtering.
     """
+    queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        """Return recipes created by the current user."""
-        return Recipe.objects.filter(user=self.request.user)
-    
-    def perform_create(self, serializer):
-        """Save the recipe with the current user."""
-        serializer.save(user=self.request.user)
 
 class SavedRecipeViewSet(viewsets.ModelViewSet):
     """
@@ -35,12 +37,28 @@ class SavedRecipeViewSet(viewsets.ModelViewSet):
     
     Allows users to save and manage their favorite recipes.
     """
+    queryset = SavedRecipe.objects.all()
     serializer_class = SavedRecipeSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        """Return recipes saved by the current user."""
-        return SavedRecipe.objects.filter(user=self.request.user)
+
+class RegisterView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        user = authenticate(email=email, password=password)
+        
+        if user is not None:
+            token, created = Token.objects.get_or_create(user=user)  # Ensure Token is correctly imported
+            return Response({'token': token.key}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -199,7 +217,13 @@ def save_generated_recipe(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = RegisterSerializer
+@csrf_exempt
+def register_user(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            return JsonResponse({'message': 'User registered successfully'}, status=201)
+        else:
+            return JsonResponse({'errors': form.errors}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
